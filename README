@@ -1,0 +1,14 @@
+A playground for me explore full-stack web dev on Node.js
+
+Stack
+-----
+
+Express
+Backbone.js
+Socket.io
+
+Jade
+Twitter Bootstrap
+
+
+As it's intended to be a "playground", it's no where near production-ready material. So it's not deployed.
