@@ -1,0 +1,406 @@
+- var categories = ["Apple", "Appliances", "Arts", "Bikes", "Boats", "Books", "PC/Computers", "Cars", "Electronics", "Furnitures", "Sport Goods", "Tickets", "Tools", "Toys/Games", "Video Games"];
+- var typeOfItem = ["For Sale", "Housing", "Jobs"]
+div.navbar.navbar-fixed-top
+  div.navbar-inner
+    div.navbar-search
+      input.search-query.span2(type="text", placeholder="Search", autocomplete="off", id="searchBar", data-provide="typeahead", data-items="10", data-source="")
+    ul.nav
+      li.dropdown.active(id="forSaleDropDown")
+        a.dropdown-toggle(data-toggle="dropdown") For Sale
+          b.caret
+        ul.dropdown-menu
+          li
+            a(href="/") All
+          each category in categories
+            li.categoryPill
+              a.category(href="#") #{category}
+    ul.nav.pull-right
+      li.dropdown
+        a.dropdown-toggle(href="#", data-toggle="dropdown") About
+          b.caret
+        ul.dropdown-menu
+          li
+            a(href="#") Contact
+          li
+            a(href="#") Help
+    div.container
+      - if (everyauth.loggedIn)
+        div.btn-group.pull-right
+          a.btn.btn-primary(href="/logout") #{everyauth.twitter.user.name}
+        ul.nav.pull-right
+          li.glowable
+            a(id="postInit")
+              div.glowable-div
+              i.icon-plus.icon-white
+          li.divider-vertical
+          li.glowable
+            a(id="initPing")
+              div.glowable-div
+              i.icon-inbox.icon-white
+                div.noti_bubble.hide
+          li.divider-vertical
+          li.glowable
+            a.icuw(href="#/postsByYou", id="postsByMe")
+              div.glowable-div
+              i.icon-th-large.icon-white
+          li.divider-vertical
+      - else
+        div.btn-group.pull-right
+          a.btn.btn-primary(href='/auth/twitter') Login with Twitter
+          a.btn.btn-primary(href='/auth/facebook') Login with Facebook
+      a(href="/") 
+        img.brand(src="/images/logo.png")
+- if (everyauth.loggedIn)
+  h5.hide(id="userName") #{everyauth.twitter.user.name}
+  h5.hide(id="userId") #{everyauth.twitter.user.id}
+div.container
+  div.hero-unit(id="welcomeHero")
+    h1 Welcome to Pixiphi!
+    p An amazing way to post and browse classifieds.
+  div.btn-group.hide.loadMore(id="loadMoreButtonGroup")
+    button.btn(id="loadMoreButton") Load More...
+  #PostsGridWrapper
+  p(id="back-top")
+    a(href="#top")
+      span
+div.modal.hide(id="postModal")
+  form.modal-form.form-horizontal
+    div.modal-header
+      h5 Something awesome is about to go on sale . . .
+    div.modal-body(id="postModalBody")
+      div.row
+        div.span4.inner-form
+          fieldset
+            div.control-group
+              label.control-label.postModalLabel(for="caption") *What's up for sale?
+              div.controls
+                input.input-xlarge.selling-what-input(id="caption", type="text", name="caption", autocomplete="off")
+                p   
+                p.charCount Limit: 15 characters
+            div.control-group
+              label.control-label.postModalLabel(for="category") *Category
+              div.controls
+                select.selectCategoryInAddNewPost(id="category", name="category")
+                  option  
+                    each category in categories
+                      option #{category}
+            div.control-group
+              label.control-label.postModalLabel(for="price") *Selling for
+              div.controls 
+                div.input-prepend
+                  span.add-on.selling-for-span $
+                  input.span2.selling-for-input(id="price", type="text", size="25", name="price", autocomplete="off")
+            div.control-group
+              label.control-label.postModalLabel(for="condition") *Condition
+              div.controls
+                div.btn-group.condition(data-toggle="buttons-radio", id="condition")
+                  a.btn.btn-large.conditionOption New
+                  a.btn.btn-large.conditionOption Mint
+                  a.btn.btn-large.conditionOption Used
+            div.control-group
+              label.control-label.postModalLabel(for="description") Description
+              div.controls
+                textarea.input-xlarge.text-area-custom(id="description", type="text", name="description", autocomplete="off", rows="3")
+                p   
+                p.charCountDesc Limit: 400 characters
+            div.control-group
+              label.control-label.postModalLabel(for="itemLocation") *Item Location
+              div.controls
+                input.input-xlarge(id="itemLocation", type="text", name="itemLocation", autocomplete="off", rel="tooltip")
+              div.controls
+                input(type="checkbox", id="itemLocationCheckBox", value="")
+                label.checkbox.inline.location-current Use current location
+        div.span2.uploadAreaContainer
+          h1 Profile Picture
+          div.row.uploadArea
+            ul.thumbnails.post-item-preview-thumbnail
+              li.post-item-preview
+                div.carousel.slide
+                  div.carousel-inner
+                    div.active.item.profilePicContainer
+                      div.carousel-caption
+                        h4.price-tag.pull-right
+                        h4.caption-tag
+                        h4.category-tag
+          div.row.nailthumbsHolder
+            div.span1.nailthumbs.nailthumbs-enable
+              input.file-input(type="file", id="fileinput-1")
+            div.span1.nailthumbs
+              input.file-input.hide(type="file", id="fileinput-2")
+            div.span1.nailthumbs
+              input.file-input.hide(type="file", id="fileinput-3")
+            div.span1.nailthumbs
+              input.file-input.hide(type="file", id="fileinput-4")
+          div.row
+            span(id="upload")
+          div.row.post-modal-footer
+            div.row.post-modal-footer-inner
+              div.span1
+                btn.nice.large.radius.white.button(href="#", id="closePost") Cancel
+              div.span3
+                btn.nice.large.radius.blue.button.pull-right(type="submit", value="Add Post", id="addPost") Add Post
+div.modal.hide(id="pingBox")
+  div.modal-header
+    a.close(id="closePingBox") x
+    div.row
+      div.span1
+        a(id="mainPing")
+          h3 Pings
+      div.span1.pingHeader
+        h5.pingCaret.hide >
+      div.span1.pingHeader
+        h4.pingUser 
+  div.modal-body.pingContainer
+    div.well.pingBox
+      h3.noPingsYet.hide No pings yet
+      div.pingThreads
+        ul.nav(id="pingUl")
+  div.modal-footer.pingBox
+script(type="text/template", id="pingItemBoxTemplate")
+  div.modal.hide(id="pingItemBox")
+    div.modal-header
+      h3 Ping <%= toUser %> about <%= caption %>
+    div.model-body
+      div.row
+        div.span4.pingInputContainer
+          div.row
+            div.span4
+              input.span5.pingItemPinger(type="text", placeholder="Ping a message...");
+script(type="text/template", id="pingThreadTemplate")
+  a.pingDialog.openPingDialog
+    div.row
+      div.span1.userInPing
+        img.userProfilePic.profPicSmall
+        h5(style="margin: 6px;") <%= fromUser %>
+      div.span3.messageBoxInPing
+        div.messagePreview
+          p  
+          p.msgPreview <%= message %>
+      div.span1.chevRightInPing
+        i.icon-chevron-right.pull-right
+        div.internalPingCountContainer.hide
+          h5.internalPingCount
+script(type="text/template", id="loadStatusBar")
+  div.row.loadBar
+    div.span1.boxAnimatedContainer
+      div.boxanimated(id="bar1")
+    div.span1.boxAnimatedContainer
+      div.boxanimated(id="bar2")
+    div.span1.boxAnimatedContainer
+      div.boxanimated(id="bar3")
+script(type="text/template", id="pingDivFooter")
+  div.row
+    div.span4.pingInputContainer
+      input.span5.ping(type="text", placeholder="Ping a message...")
+script(type="text/template", id="postItemTemplate")
+   ul.thumbnails
+     li.span4
+       div.thumbnail
+         div.carousel.slide
+          div.carousel-inner
+            div.active.item
+              img.home
+              div.carousel-caption
+                h4.price-tag.pull-right $<%= price %> 
+                h4.caption-tag <%= caption %>
+                span.label-when.pull-right <%= when %>
+                h4.category-tag <%= category %>
+script(type="text/template", id="postByMeItemTemplate")
+   ul.thumbnails
+     li.span4
+       div.thumbnail
+         div.carousel.slide
+           div.carousel-inner
+             div.active.item
+               img.home
+               div.carousel-caption
+                 h4.price-tag.pull-right <%= price %> 
+                 h4.caption-tag <%= caption %>
+                 span.label-when.pull-right <%= when %>
+                 h4.category-tag <%= category %>
+script(type="text/template", id="noPostsByMe")
+  div.alert.alert-info
+    strong You have not posted anything yet!
+script(type="text/template", id="delteConfirmationTemplate")
+  div.alert-custom.alert-block.fade.in
+    h4.alert-heading-custom Delete
+    p.alert-body-custom Are you sure you want to delete this post?
+    p
+      a.btn.btn-danger(id="deletePostByMe") Delete 
+      &nbsp
+      a.btn(id="cancelDelete") Cancel
+script(type="text/template", id="loadMoreProgressBar")
+  div.progress.progress-striped.active
+    div.bar(style="width: 40%")
+script(type="text/template", id="postsByMeHeroTemplate")
+  div.hero-unit(id="postsByMeHero")
+    h1 Posts By You!
+    p Here you can update or delete listings with ease just by hovering over the captions!
+input.search-query.hide.modal.span2(type="text", placeholder="Search", id="searchModal")
+script(type="text/template", id="noSearchResultTemplate")
+  div.hero-unit
+    h1 Oops... cannot find anything that matches "<%= query %>"
+script(type="text/template", id="searchResultTemplate")
+  div.hero-unit
+    h1 Found it!
+script(type="text/template", id="categoryInfoTemplate")
+  div.alert.alert-info(id="categoryInfo")
+    strong Category: <%= category %>
+script(type="text/template", id="cityDropDownTemplate")
+  ul.nav
+    li.dropdown
+      a.dropdown-toggle(data-toggle="dropdown", id="userCity") <%= userCity %>
+        b.caret
+script(type="text/template", id="postOptionsTemplate")
+  div.row(id="postOp")
+    div
+      btn.post-hover(id="ping") Ping
+    div
+      p   
+    div
+      btn.post-hover(id="postDetails") Details
+script(type="text/template", id="postOptionsWithoutPingTemplate")
+  div.row(id="postOp")
+    div
+      btn.post-hover(id="postDetails") Details
+div.modal.hide(id="cancelAddNewPostPromptModal")
+  div.modal-header
+    h3 Warning
+  div.modal-body
+    p Sure you want to cancel adding this post? =\\
+  div.modal-footer
+    a.btn.btn-danger(id="cancelAddNewPostYes") Yes
+    a.btn(id="cancelAddNewPostNo") No
+div.reveal-modal.post-detail(id="postItemMapImgModal")
+  a.close-reveal-modal.map x
+script(type="text/template", id="postItemDetailModalTemplate")
+  div.reveal-modal.post-item-detail-modal(id="postItemModal")
+    div.row
+      div.span3
+        h1 <%= Caption %>
+      div.span1
+        h1 <%= Price %>
+    p   
+    div.row
+      div.span3
+        h5 <%= Category %>
+      div.span1
+        span.label-when <%= When %>
+    p
+    div.row
+      div.span1
+        h5 Condition
+      div.span1
+        h5 <%= Condition %>
+    p
+    div.row
+      div.span1
+        h5 Location: 
+      div.span2
+        h5 <%= Location %>
+    p   
+    div.row
+      div.span1
+        h4 Photos
+    p   
+    div.row
+      div.item-pictures
+    p 
+    h4 Description
+    p  
+    div.item-detail-desc
+      blockquote
+        p <%= Description %>
+script(type="text/template", id="postModalNailthumbTemplate")
+  div.span1.nailthumbs.nailthumbs-enable
+    input.file-input(type="file", id="fileinput-1")
+  div.span1.nailthumbs
+    input.file-input.hide(type="file", id="fileinput-2")
+  div.span1.nailthumbs
+    input.file-input.hide(type="file", id="fileinput-3")
+  div.span1.nailthumbs
+    input.file-input.hide(type="file", id="fileinput-4")
+script(type="text/template", id="pingInnerBubbleLeftTemplate")
+  div.row
+    div.span1.profPicBoxLeft
+    div.span2.pingMsgLeft
+      p <%= msg %>
+script(type="text/template", id="pingInnerBubbleRightTemplate")
+  div.row
+    div.span2.pingMsgRight
+      p <%= msg %>
+    div.span1.profPicBoxRight
+script(type="text/template", id="shortUpdateFormTemplate")
+  div.row.editHeader
+    div.span2
+      h3.editPost Edit Post
+    div.span1.moreOptions
+      a.editMore(id="editMore", style="margin-right: 10px;") More
+      a(id="deletePostTrigger") Delete
+  div.shortForm
+    input.span2.captionInput(type="text")
+    input.priceInput(type="text")
+    select.span1.categoryInput.chzn-select.chzn-done(style="width: 100px;")
+script(type="text/template", id="longUpdateFormTemplate")
+  div.row
+    div.span2
+      h4 Caption
+      input.span2.captionInput(type="text")
+    div.span1
+      h4 Price
+      input.priceInput(type="text")
+  div.row
+    div.span2
+      h4 Category
+      select.span1.categoryInput.chzn-select.chzn-done(style="width: 100px;")
+    div.span1.pull-right
+      h4 Condition
+      select.span1.conditionInput.chzn-select.chzn-done(style="width: 100px;")
+        option New
+        option Mint
+        option Used
+  div.row
+    div.span4
+      h4 Description
+      textarea.text-area-custom.descInput
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
